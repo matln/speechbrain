@@ -7,14 +7,14 @@
 seed: 1986
 __set_seed: !apply:torch.manual_seed [!ref <seed>]
 output_folder: !ref recipes/VoxCeleb/SpeakerRec/results/ecapa_augment/<seed>
-# save_folder: !ref <output_folder>/save
-save_folder: !ref <output_folder>/save_only_voxceleb2
+save_folder: !ref <output_folder>/save
+# save_folder: !ref <output_folder>/save_only_voxceleb2
 train_log: !ref <output_folder>/train_log.txt
 device: 'cuda:2'
 
 # Data files
-# data_folder: /data/corpus/VoxCeleb2/dev, /data/corpus/VoxCeleb1_v2/dev
-data_folder: /data/corpus/VoxCeleb2/dev
+data_folder: /data/corpus/VoxCeleb2/dev, /data/corpus/VoxCeleb1_v2/dev
+# data_folder: /data/corpus/VoxCeleb2/dev
 train_annotation: !ref <save_folder>/train.csv
 valid_annotation: !ref <save_folder>/dev.csv
 
@@ -56,7 +56,7 @@ out_n_neurons: 7205 #1211 for vox1  # 5994 for vox2, 7205 for vox1+vox2
 dataloader_options:
     batch_size: !ref <batch_size>
     shuffle: !ref <shuffle>
-    num_workers: 2
+    num_workers: 48
 
 # Functions
 compute_features: !new:speechbrain.lobes.features.Fbank

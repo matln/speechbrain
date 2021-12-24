@@ -35,6 +35,7 @@ class SpeakerBrain(sb.core.Brain):
         input speech.
         """
         batch = batch.to(self.device)
+        # lens: batch 的大小
         wavs, lens = batch.sig
 
         if stage == sb.Stage.TRAIN:
@@ -215,6 +216,7 @@ if __name__ == "__main__":
 
     # Dataset prep (parsing VoxCeleb and annotation into csv files)
     from voxceleb_prepare import prepare_voxceleb  # noqa
+    # pdb.Pdb(skip=['genericpath', 'os', 'posixpath', 'collections.abc']).set_trace()
 
     run_on_main(
         prepare_voxceleb,

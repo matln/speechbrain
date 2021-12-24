@@ -184,7 +184,7 @@ class SpecAugment(torch.nn.Module):
 
         # compute masks
         arange = torch.arange(D, device=x.device).view(1, 1, -1)
-        mask = (mask_pos <= arange) * (arange < (mask_pos + mask_len))
+        mask = (mask_pos <= arange) *  (arange < (mask_pos + mask_len))
         mask = mask.any(dim=1)
 
         if dim == 1:

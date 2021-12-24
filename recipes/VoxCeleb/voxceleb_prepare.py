@@ -109,6 +109,7 @@ def prepare_voxceleb(
     save_csv_dev = os.path.join(save_folder, DEV_CSV)
 
     # Create the data folder contains VoxCeleb1 test data from the source
+    # 把 voxceleb_test 的 40 个说话人的数据解压到 voxceleb2/wav 中，解压后 wav 文件夹中共 5994+40 个说话人
     if source is not None:
         if not os.path.exists(os.path.join(data_folder, "wav", "id10270")):
             logger.info(f"Extracting {source}/{TEST_WAV} to {data_folder}")
@@ -257,6 +258,10 @@ def _get_utt_split_lists(
     print("Getting file list...")
     for data_folder in data_folders:
 
+        # 虽然在 voxceleb 的 trials 文件中，第 1 列 enrollment 文件和第 2 列 test 文件的说话人集合相同，但这样只统计 enrollment 的写法当第一次读代码时感觉很奇怪
+        # list_test_E.txt, list_test_E_cleaned.txt: 1251
+        # list_test_H.txt, list_test_H_cleaned.txt: 1190
+        # veri_test.txt, veri_test_cleaned.txt: 40
         test_lst = [
             line.rstrip("\n").split(" ")[1]
             for line in open(verification_pairs_file)
@@ -309,6 +314,7 @@ def _get_chunks(seg_dur, audio_id, audio_duration):
     """
     Returns list of chunks
     """
+    # overlap=0
     num_chunks = int(audio_duration / seg_dur)  # all in milliseconds
 
     chunk_lst = [
@@ -441,6 +447,8 @@ def prepare_csv_enrol_test(data_folders, save_folder, verification_pairs_file):
     ]  # noqa E231
 
     for data_folder in data_folders:
+        if not os.path.exists(os.path.join(data_folder, "wav", "id10270")):
+            continue
 
         test_lst_file = verification_pairs_file
 

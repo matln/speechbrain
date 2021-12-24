@@ -41,9 +41,9 @@ def compute_embedding(wavs, wav_lens):
         feats = params["compute_features"](wavs)
         feats = params["mean_var_norm"](feats, wav_lens)
         embeddings = params["embedding_model"](feats, wav_lens)
-        embeddings = params["mean_var_norm_emb"](
-            embeddings, torch.ones(embeddings.shape[0]).to(embeddings.device)
-        )
+        # embeddings = params["mean_var_norm_emb"](
+        #     embeddings, torch.ones(embeddings.shape[0]).to(embeddings.device)
+        # )
     return embeddings.squeeze(1)
 
 
@@ -65,6 +65,7 @@ def compute_embedding_loop(data_loader):
                     found = True
             if not found:
                 continue
+            assert lens[0].item() == 1
             wavs, lens = wavs.to(params["device"]), lens.to(params["device"])
             emb = compute_embedding(wavs, lens).unsqueeze(1)
             for i, seg_id in enumerate(seg_ids):
@@ -86,7 +87,7 @@ def get_verification_scores(veri_test):
     similarity = torch.nn.CosineSimilarity(dim=-1, eps=1e-6)
 
     # creating cohort for score normalization
-    if "score_norm" in params:
+    if "score_norm" in params and params["score_norm"] is not None:
         train_cohort = torch.stack(list(train_dict.values()))
 
     for i, line in enumerate(veri_test):
@@ -98,7 +99,7 @@ def get_verification_scores(veri_test):
         enrol = enrol_dict[enrol_id]
         test = test_dict[test_id]
 
-        if "score_norm" in params:
+        if "score_norm" in params and params["score_norm"] is not None:
             # Getting norm stats for enrol impostors
             enrol_rep = enrol.repeat(train_cohort.shape[0], 1, 1)
             score_e_c = similarity(enrol_rep, train_cohort)
@@ -267,11 +268,11 @@ if __name__ == "__main__":
     enrol_dict = compute_embedding_loop(enrol_dataloader)
     test_dict = compute_embedding_loop(test_dataloader)
 
-    # Second run (normalization stats are more stable)
-    enrol_dict = compute_embedding_loop(enrol_dataloader)
-    test_dict = compute_embedding_loop(test_dataloader)
+    # # Second run (normalization stats are more stable)
+    # enrol_dict = compute_embedding_loop(enrol_dataloader)
+    # test_dict = compute_embedding_loop(test_dataloader)
 
-    if "score_norm" in params:
+    if "score_norm" in params and params["score_norm"] is not None:
         train_dict = compute_embedding_loop(train_dataloader)
 
     # Compute the EER
