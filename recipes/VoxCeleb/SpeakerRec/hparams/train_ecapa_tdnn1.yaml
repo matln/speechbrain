@@ -10,7 +10,6 @@ output_folder: !ref recipes/VoxCeleb/SpeakerRec/results/ecapa_augment/<seed>
 save_folder: !ref <output_folder>/save
 # save_folder: !ref <output_folder>/save_only_voxceleb2
 train_log: !ref <output_folder>/train_log.txt
-device: 'cuda:2'
 
 # Data files
 data_folder: /data/corpus/VoxCeleb2/dev, /data/corpus/VoxCeleb1_v2/dev
