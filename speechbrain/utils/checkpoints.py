@@ -162,12 +162,14 @@ DEFAULT_LOAD_HOOKS = {
     torch.optim.Optimizer: torch_recovery,
     torch.optim.lr_scheduler._LRScheduler: torch_recovery,
     torch.optim.lr_scheduler.ReduceLROnPlateau: torch_recovery,
+    torch.cuda.amp.grad_scaler.GradScaler: torch_recovery,
 }
 DEFAULT_SAVE_HOOKS = {
     torch.nn.Module: torch_save,
     torch.optim.Optimizer: torch_save,
     torch.optim.lr_scheduler._LRScheduler: torch_save,
     torch.optim.lr_scheduler.ReduceLROnPlateau: torch_save,
+    torch.cuda.amp.grad_scaler.GradScaler: torch_save,
 }
 DEFAULT_TRANSFER_HOOKS = {
     torch.nn.Module: torch_parameter_transfer,
@@ -742,9 +744,11 @@ class Checkpointer:
         if max_key and not importance_key:
 
             def importance_key(ckpt):
+                "Defines the importance key."
                 return ckpt.meta[max_key]
 
             def ckpt_predicate(ckpt, old_predicate=ckpt_predicate):
+                "Checkpoints predicate."
                 if old_predicate is not None:
                     return max_key in ckpt.meta and old_predicate(ckpt)
                 else:
@@ -753,9 +757,11 @@ class Checkpointer:
         elif min_key and not importance_key:
 
             def importance_key(ckpt):
+                "Defines the importance key."
                 return -ckpt.meta[min_key]
 
             def ckpt_predicate(ckpt, old_predicate=ckpt_predicate):
+                "Checkpoints predicate."
                 if old_predicate is not None:
                     return min_key in ckpt.meta and old_predicate(ckpt)
                 else:
